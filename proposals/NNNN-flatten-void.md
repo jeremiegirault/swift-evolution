@@ -36,8 +36,11 @@ c1(()) // I have to use a double parenthesis where a single pair was valid in sw
 ```
 
 `Void` already contains some magic but not consistently.
+
 There is a clear drawback in the clarity and usability of the new code syntax. The generic code is less concise and this new syntax does not express the intent (calling a Callback without arguments).
-Due to the strength of the type-checking system, it can easily be problematic for the caller to find the correct arguments when calling a function when using Void arguments and/or generics.
+Due to the strength of the type-checking system, it can quickly be problematic for the caller to find the correct arguments when calling a function when using `Void` arguments and using generics.
+
+Moreover, this change breaks source compatibility from swift3 to swift4. 
 
 ## Proposed solution
 
@@ -48,7 +51,7 @@ In particular, `Void` should not mean an empty tuple argument (which made sense 
 Therefore this solution proposes that `Void` is detached from its initial tuple definition and attached a new a special behavior like `Never` is.
 Void is proposed to become an intrinsic type with no possible value from code or possible extensions. It should not be instantiable from code.
 
-The meaning of `Void` would be to be removed from the canonical signature of the function, which, with their, is the identity of the function. e.g.
+The meaning of `Void` would be to be removed from the canonical signature of the function, which is the identity of the function. e.g.
 
 ```
 func test<T>(t: T) {}
@@ -72,7 +75,9 @@ func test<Void>() {
 }
 ```
 
-Actually in generics, if the type is not constrained (which would prevent `Void` to be used), either the `Void` type and its instances would be stripped from the code.
+In case pseudo-instances could not be removed, this means that we cannot compile the generic using `Void`, because the called function cannonical signature is not compliant.
+
+That means the `Void` type and all of its pseudo-instances would be stripped once generics are expanded.
 
 
 ## Detailed design
