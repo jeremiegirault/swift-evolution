@@ -14,7 +14,7 @@ Swift-evolution thread: [Discussion thread topic for that proposal](https://list
 
 ## Motivation
 
-`Void` was initially defined as the type of the empty tuple in swift because arguments of functions were still tuples at that time. This definition is now obsoleted by the changes made by in [SE-0110](https://github.com/apple/swift-evolution/blob/master/proposals/0110-distingish-single-tuple-arg.md) implementation which clearly differentiates arguments and tuples. This obsolecence causes multiple type of regressions / inconsistencies and is source-breaking for users of generic swift.
+`Void` was initially defined as the type of the empty tuple in swift because arguments of functions were still tuples at that time. This definition is now obsoleted by the changes made by in [SE-0110](https://github.com/apple/swift-evolution/blob/master/proposals/0110-distingish-single-tuple-arg.md) implementation which clearly differentiates arguments and tuples. This obsolescence causes multiple types of regressions / inconsistencies and is source-breaking for users of generic swift.
 
 ```swift
 func test() { // equivalent to "func test() -> Void"
@@ -37,18 +37,18 @@ c1(()) // I have to use a double parenthesis where a single pair was valid in sw
 
 `Void` already contains some magic but not consistently.
 There is a clear drawback in the clarity and usability of the new code syntax. The generic code is less concise and this new syntax does not express the intent (calling a Callback without arguments).
-Due to the stength of the type-checking system, it can easily be problematic for the caller to find the correct arguments when calling a function when using Void arguments and/or generics.
+Due to the strength of the type-checking system, it can easily be problematic for the caller to find the correct arguments when calling a function when using Void arguments and/or generics.
 
 ## Proposed solution
 
-This proposition considers that if arguments-as-tuple is obsolte, then Void-as-tuple is also obsolete.
+This proposition considers that if arguments-as-tuple is obsolete, then Void-as-tuple is also obsolete.
 
-Especially, `Void` should not mean an empty tuple argument (which made sense were arguments were tuples). `Void` is the **absence** of an argument.
+In particular, `Void` should not mean an empty tuple argument (which made sense were arguments were tuples). `Void` is the **absence** of an argument.
 
-Therefore this solution proposes that `Void` is detached from it's initial tuple definition and attached a new a special behavior like `Never` is.
-Void is proposed to becomes an intrinsic type with no possible value from code or possible extensions. It should not be instantiable from code.
+Therefore this solution proposes that `Void` is detached from its initial tuple definition and attached a new a special behavior like `Never` is.
+Void is proposed to become an intrinsic type with no possible value from code or possible extensions. It should not be instantiable from code.
 
-The meaning of `Void` would be to be removed from canonical signature of the function, which, with their, is the identity of the function. e.g.
+The meaning of `Void` would be to be removed from the canonical signature of the function, which, with their, is the identity of the function. e.g.
 
 ```
 func test<T>(t: T) {}
@@ -81,7 +81,7 @@ Actually in generics, if the type is not constrained (which would prevent `Void`
 - *(2)* At the function signature site: from the initial function signature, create a "canonical" version of the signature where all `Void` parameters are removed. This canonical signature would be the identity of the function signature everywhere else in the code (especially when checking for conflicting signatures).
 - *(3)* Strip all pseudo-instances of `Void`
 - At the call site: the only signature to be used would be the "canonical" one (striped from `Void` arguments).
-- In generics: `Void` can be used normally and generates types and functions as usual. Generated functions should respect rule *(2)* and *(3)*
+- In generics: `Void` can be used normally and generates types and functions as usual. Generated functions should respect rules *(2)* and *(3)*
 
 ## Source compatibility
 
@@ -93,7 +93,7 @@ Should not affect ABI (need confirmation)
 
 ## Effect on API resilience
 
-Should not effect API (need confirmation)
+Should not affect API (need confirmation)
 
 ## Alternatives considered
 
