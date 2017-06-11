@@ -8,17 +8,17 @@
 ## Introduction
 
 [SE-0110](https://github.com/apple/swift-evolution/blob/master/proposals/0110-distingish-single-tuple-arg.md) in its current form improved the compiler consistency and reliability but caused regressions for people using generic-style swift especially around the `Void` type.
-The goal of this proposal is to alter the `Void` type definition so as to preserve source compatibility and avoid generics regressions.
+The goal of this proposal is to alter the `Void` type definition to preserve source compatibility and avoid generics regressions.
 
 Swift-evolution thread: [Discussion thread topic for that proposal](https://lists.swift.org/pipermail/swift-evolution/)
 
 ## Motivation
 
-`Void` was initially defined as the type of the empty tuple in swift because arguments of functions were still tuples at that time. This definition is now obsoleted by the changes made by in [SE-0110](https://github.com/apple/swift-evolution/blob/master/proposals/0110-distingish-single-tuple-arg.md) implementation which clearly differentiates arguments and tuples. This obsolescence causes multiple types of regressions / inconsistencies and is source-breaking for users of generic swift.
+`Void` was initially defined as the type of the empty tuple in swift because arguments of functions were still tuples at that time. This definition is now obsoleted by the changes made in [SE-0110](https://github.com/apple/swift-evolution/blob/master/proposals/0110-distingish-single-tuple-arg.md) implementation which clearly differentiates arguments and tuples. This obsolescence causes multiple types of regressions / inconsistencies and is source-breaking for users of generic swift.
 
 ```swift
 func test() { // equivalent to "func test() -> Void"
-	// why don't I have to return () ? magic !
+	// why don't I have to return ()? magic!
 }
 test()
 ```
@@ -28,11 +28,11 @@ or
 ```swift
 typealias Callback<T> = (T) -> Void
 let c1: Callback<Void> = { print("Callback<Void>") } 
-// why don't I have to use "_ in" in c1 closure ? magic !
+// why don't I have to use "_ in" in c1 closure? magic!
 let c2: Callback<Int> = { print("Callback<Int>(\($0)") }
 
 c2(42)
-c1(()) // I have to use a double parenthesis where a single pair was valid in swift3. not magic ?
+c1(()) // I have to use a double parenthesis where a single pair was valid in swift3. Not magic?
 ```
 
 `Void` already contains some magic but not consistently.
@@ -46,9 +46,9 @@ Moreover, this change breaks source compatibility from swift3 to swift4.
 
 This proposition considers that if arguments-as-tuple is obsolete, then Void-as-tuple is also obsolete.
 
-In particular, `Void` should not mean an empty tuple argument (which made sense were arguments were tuples). `Void` is the **absence** of an argument.
+In particular, `Void` should not mean an empty tuple argument (which made sense when arguments were tuples). `Void` is the **absence** of an argument.
 
-Therefore this solution proposes that `Void` is detached from its initial tuple definition and attached a new a special behavior like `Never` is.
+Therefore this solution proposes that `Void` is detached from its initial tuple definition and attached to a new special behavior, like `Never` is.
 Void is proposed to become an intrinsic type with no possible value from code or possible extensions. It should not be instantiable from code.
 
 The meaning of `Void` would be to be removed from the canonical signature of the function, which is the identity of the function. e.g.
@@ -59,7 +59,7 @@ func test<T>(t: T) {}
 test<Void>() {}
 ```
 
-While being possible to remove `Void` from the caller perspective, it is a bit trickier from the callee side if the argument is used. Let's consider :
+While being possible to remove `Void` from the caller perspective, it is a bit trickier from the callee side if the argument is used. Let's consider:
 
 ```
 func test<T>(t: T) {
@@ -67,7 +67,7 @@ func test<T>(t: T) {
 }
 ```
 
-What should happen when T becomes `Void` ? Every pseudo-instance use should also be striped. In pseudo-language the above becomes :
+What should happen when T becomes `Void`? Every pseudo-instance use should also be striped. In pseudo-language the above becomes:
 
 ```
 func test<Void>() {
@@ -104,7 +104,7 @@ Should not affect API (need confirmation)
 
 ### No change
 
-If no change happens, users will have to use a specific type for the neutral `Void` argument :
+If no change happens, users will have to use a specific type for the neutral `Void` argument:
 
 ```
 typealias CallbackOf<T> = (T) -> Void
